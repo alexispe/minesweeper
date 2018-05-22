@@ -18,3 +18,11 @@ table{
   background-color: rgba(56, 52, 52, 0.322);
   cursor: default;
 }
+
+.mined{
+  background-image: url(../images/bomb.png)
+}
+
+.flagged{
+  background-image: url(../images/flag.png);
+}
