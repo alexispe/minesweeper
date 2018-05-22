@@ -145,6 +145,7 @@ let startGame = () => {
 }
 let endGame = () => {
   $('td').off("click");
+  $('td').css('cursor','default');
   for (let x = 0; x < GRID.length; x++) {
     for (let y = 0; y < GRID[x].length; y++) {
       let index = x * COLUMNS + y
