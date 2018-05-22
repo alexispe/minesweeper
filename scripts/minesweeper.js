@@ -43,7 +43,7 @@ let displayGrid = () => {
     htmlData += '<tr>';
     for (let c = 0; c < GRID[r].length; c++) {
       htmlData += '<td>';
-      htmlData += GRID[r][c] ? 'X' : '-';
+      //htmlData += GRID[r][c] ? 'X' : '-';
       htmlData += '</td>';
     }
     htmlData += '</tr>';
@@ -59,8 +59,8 @@ let displayGridJquery = () => {
   for (let r = 0; r < GRID.length; r++) {
     htmlData += '<tr>';
     for (let c = 0; c < GRID[r].length; c++) {
-      htmlData += '<td>';
-      htmlData += GRID[r][c] ? 'X' : '-';
+      htmlData += '<td onclick="reveal(this)">';
+      //htmlData += GRID[r][c] ? 'X' : '-';
       htmlData += '</td>';
     }
     htmlData += '</tr>';
@@ -69,19 +69,19 @@ let displayGridJquery = () => {
   $('#ms-grid').html(htmlData);
 }
 
-let getNumber = (x, y) => {
+let getNumber = (posX, posY) => {
   let totalMines = 0;
-  let startX = x - 1
-  let endX = x + 1
-  let startY = y - 1
-  let endY = x + 1
+  let startX = posX - 1
+  let endX = posX + 1
+  let startY = posY - 1
+  let endY = posY + 1
 
-  for (let i = startX; i <= endX; i++) {
-    for (let j = startY; j <= endY; j++) {
-      if ((i >= 0 && i < ROWS) && (j >= 0 && j < COLUMNS)) {
-        let Cell = GRID[i][j]
-
-        if (i != x || j != y) {
+  for (let x = startX; x <= endX; x++) {
+    for (let y = startY; y <= endY; y++) {
+      if ((x >= 0 && x < ROWS) && (y >= 0 && y < COLUMNS)) {
+        let Cell = GRID[x][y]
+        console.log('Row : '+x+' Col : '+y+' Val:'+Cell);
+        if (x != posX || y != posY) {
           if (Cell) {
             totalMines++;
           }
@@ -98,27 +98,49 @@ let getPosition = (cell) => {
   let col = index % COLUMNS;
   let row = Math.floor(index / COLUMNS);
 
-  return [col,row]
+  return [row,col]
 }
 let reveal = (cell) => {
   if(!$(cell).hasClass('revealed')) {
     $(cell).addClass('revealed')
     let pos = getPosition(cell)
-    // let number = getNumber(pos[x],pos[y])
-    // if(number > 0) $(cell).text(number)
-    // //else
+    if(!GRID[pos[0]][pos[1]]) {
+      let number = getNumber(pos[0],pos[1])
+      if(number > 0) $(cell).text(number)
+      else {
+        let startX = pos[0] - 1
+        let endX = pos[0] + 1
+        let startY = pos[1] - 1
+        let endY = pos[1] + 1
+
+        for (let x = startX; x <= endX; x++) {
+          for (let y = startY; y <= endY; y++) {
+            if ((x >= 0 && x < ROWS) && (y >= 0 && y < COLUMNS)) {
+              let index = x * COLUMNS + y
+              reveal($('td').eq(index))
+            }
+          }
+        }
+      }
+    } else endGame()
   }
 }
 
 let startGame = () => {
   initModel(ROWS,COLUMNS,MINES);
-  displayGrid();
+  displayGridJquery();
+}
+let endGame = () => {
+  $("td").off();
+  for (let x = 0; x < GRID.length; x++) {
+    for (let y = 0; y < GRID[x].length; y++) {
+      let index = x * COLUMNS + y
+      if(GRID[x][y]) {
+        let index = x * COLUMNS + y
+        $('td').eq(index).addClass('mined')
+      }
+    }
+  }
 }
 
 startGame();
-
-$('td').click(function() {
-  console.log($(this));
-  getPosition($(this))
-  reveal($(this))
-})
