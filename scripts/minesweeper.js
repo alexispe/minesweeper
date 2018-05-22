@@ -1,5 +1,6 @@
 const ROWS = 9, COLUMNS = 9, MINES = 10;
 const GRID = [];
+let FAIL_DIALOG = null;
 
 let initModel = (rows, columns, mines) => {
   let columnsTemp = [], minesTemp = [];
@@ -132,19 +133,32 @@ let reveal = (cell) => {
     } else endGame()
   }
 }
-
 let flag = (cell) => {
   if (!$(cell).hasClass('flagged')) {
     $(cell).addClass('flagged')
   }
 }
 
+let prepareDialogs = () => {
+  FAIL_DIALOG = $("#dialog").dialog({
+    buttons: [
+      {
+        text: "Ok",
+        icon: "ui-icon-heart",
+        click: function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    ]
+  });
+}
 let startGame = () => {
   initModel(ROWS, COLUMNS, MINES);
   displayGridJquery();
 }
 let endGame = () => {
   $('td').off("click");
+  $('td').off("contextmenu");
   $('td').css('cursor','default');
   for (let x = 0; x < GRID.length; x++) {
     for (let y = 0; y < GRID[x].length; y++) {
@@ -156,5 +170,6 @@ let endGame = () => {
     }
   }
 }
+
 
 startGame();
