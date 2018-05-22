@@ -21,7 +21,6 @@ let initModel = (rows, columns, mines) => {
       }
     }
   }
-  // console.log('array mines : ', minesTemp);
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
@@ -29,24 +28,20 @@ let initModel = (rows, columns, mines) => {
       var isMine = $.grep(minesTemp, function(element, index){
         return element[0] == r && element[1] == c
       });
-
       columnsTemp.push(isMine.length ? true : false)
     }
     GRID.push(columnsTemp);
     columnsTemp = [];
   }
-  // console.log('array grid : ',GRID);
 }
 
 let displayGrid = () => {
-  $('#ms-box').html('<div id="ms-grid"></div>');
   let htmlData = '';
   htmlData += '<table>';
 
   for (let r = 0; r < GRID.length; r++) {
     htmlData += '<tr>';
     for (let c = 0; c < GRID[r].length; c++) {
-      console.log();
       htmlData += '<td>';
       htmlData += GRID[r][c] ? 'X' : '-';
       htmlData += '</td>';
@@ -54,6 +49,22 @@ let displayGrid = () => {
     htmlData += '</tr>';
   }
 
+  let x = document.getElementById("ms-box").innerHTML = '<div id="ms-grid">'+htmlData+'</div>';
+}
+let displayGridJquery = () => {
+  $('#ms-box').html('<div id="ms-grid"></div>');
+  let htmlData = '';
+  htmlData += '<table>';
+
+  for (let r = 0; r < GRID.length; r++) {
+    htmlData += '<tr>';
+    for (let c = 0; c < GRID[r].length; c++) {
+      htmlData += '<td>';
+      htmlData += GRID[r][c] ? 'X' : '-';
+      htmlData += '</td>';
+    }
+    htmlData += '</tr>';
+  }
 
   $('#ms-grid').html(htmlData);
 }
