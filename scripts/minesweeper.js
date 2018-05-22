@@ -8,16 +8,16 @@ let initModel = (rows, columns, mines) => {
   for (let m = 0; m < mines; m++) {
     let mineAdded = false;
     // Tant que une mine existe déjà aux coordonnées demandées, on recommence
-    while(!mineAdded) {
+    while (!mineAdded) {
       let randomRow = Math.floor(Math.random() * Math.floor(ROWS));
       let randomCol = Math.floor(Math.random() * Math.floor(COLUMNS));
 
-      var alreadyExist = $.grep(minesTemp, function(element, index){
+      var alreadyExist = $.grep(minesTemp, function (element, index) {
         return element[0] == randomRow && element[1] == randomCol
       });
-      if(!alreadyExist.length) {
+      if (!alreadyExist.length) {
         mineAdded = true
-        minesTemp.push([randomRow,randomCol]);
+        minesTemp.push([randomRow, randomCol]);
       }
     }
   }
@@ -25,7 +25,7 @@ let initModel = (rows, columns, mines) => {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
 
-      var isMine = $.grep(minesTemp, function(element, index){
+      var isMine = $.grep(minesTemp, function (element, index) {
         return element[0] == r && element[1] == c
       });
       columnsTemp.push(isMine.length ? true : false)
@@ -49,7 +49,7 @@ let displayGrid = () => {
     htmlData += '</tr>';
   }
 
-  let x = document.getElementById("ms-box").innerHTML = '<div id="ms-grid">'+htmlData+'</div>';
+  let x = document.getElementById("ms-box").innerHTML = '<div id="ms-grid">' + htmlData + '</div>';
 }
 let displayGridJquery = () => {
   $('#ms-box').html('<div id="ms-grid"></div>');
@@ -67,10 +67,11 @@ let displayGridJquery = () => {
   }
 
   $('#ms-grid').html(htmlData);
-  $('td').bind('click', function(){
+  $('td').bind('click', function () {
     reveal(this);
   });
-  $('td').bind('rightclick', function(){
+  $('td').bind('contextmenu', function (e) {
+    e.preventDefault()
     flag(this);
   });
 }
@@ -86,7 +87,7 @@ let getNumber = (posX, posY) => {
     for (let y = startY; y <= endY; y++) {
       if ((x >= 0 && x < ROWS) && (y >= 0 && y < COLUMNS)) {
         let Cell = GRID[x][y]
-        console.log('Row : '+x+' Col : '+y+' Val:'+Cell);
+        console.log('Row : ' + x + ' Col : ' + y + ' Val:' + Cell);
         if (x != posX || y != posY) {
           if (Cell) {
             totalMines++;
@@ -104,15 +105,15 @@ let getPosition = (cell) => {
   let col = index % COLUMNS;
   let row = Math.floor(index / COLUMNS);
 
-  return [row,col]
+  return [row, col]
 }
 let reveal = (cell) => {
-  if(!$(cell).hasClass('revealed')) {
+  if (!$(cell).hasClass('revealed')) {
     $(cell).addClass('revealed')
     let pos = getPosition(cell)
-    if(!GRID[pos[0]][pos[1]]) {
-      let number = getNumber(pos[0],pos[1])
-      if(number > 0) $(cell).text(number)
+    if (!GRID[pos[0]][pos[1]]) {
+      let number = getNumber(pos[0], pos[1])
+      if (number > 0) $(cell).text(number)
       else {
         let startX = pos[0] - 1
         let endX = pos[0] + 1
@@ -132,8 +133,14 @@ let reveal = (cell) => {
   }
 }
 
+let flag = (cell) => {
+  if (!$(cell).hasClass('flagged')) {
+    $(cell).addClass('flagged')
+  }
+}
+
 let startGame = () => {
-  initModel(ROWS,COLUMNS,MINES);
+  initModel(ROWS, COLUMNS, MINES);
   displayGridJquery();
 }
 let endGame = () => {
@@ -141,7 +148,7 @@ let endGame = () => {
   for (let x = 0; x < GRID.length; x++) {
     for (let y = 0; y < GRID[x].length; y++) {
       let index = x * COLUMNS + y
-      if(GRID[x][y]) {
+      if (GRID[x][y]) {
         let index = x * COLUMNS + y
         $('td').eq(index).addClass('mined')
       }
