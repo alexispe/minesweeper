@@ -8,16 +8,16 @@ let initModel = (rows, columns, mines) => {
   for (let m = 0; m < mines; m++) {
     let mineAdded = false;
     // Tant que une mine existe déjà aux coordonnées demandées, on recommence
-    while(!mineAdded) {
+    while (!mineAdded) {
       let randomRow = Math.floor(Math.random() * Math.floor(ROWS));
       let randomCol = Math.floor(Math.random() * Math.floor(COLUMNS));
 
-      var alreadyExist = $.grep(minesTemp, function(element, index){
+      var alreadyExist = $.grep(minesTemp, function (element, index) {
         return element[0] == randomRow && element[1] == randomCol
       });
-      if(!alreadyExist.length) {
+      if (!alreadyExist.length) {
         mineAdded = true
-        minesTemp.push([randomRow,randomCol]);
+        minesTemp.push([randomRow, randomCol]);
       }
     }
   }
@@ -25,7 +25,7 @@ let initModel = (rows, columns, mines) => {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
 
-      var isMine = $.grep(minesTemp, function(element, index){
+      var isMine = $.grep(minesTemp, function (element, index) {
         return element[0] == r && element[1] == c
       });
       columnsTemp.push(isMine.length ? true : false)
@@ -34,7 +34,6 @@ let initModel = (rows, columns, mines) => {
     columnsTemp = [];
   }
 }
-
 let displayGrid = () => {
   let htmlData = '';
   htmlData += '<table>';
@@ -49,7 +48,7 @@ let displayGrid = () => {
     htmlData += '</tr>';
   }
 
-  let x = document.getElementById("ms-box").innerHTML = '<div id="ms-grid">'+htmlData+'</div>';
+  let x = document.getElementById("ms-box").innerHTML = '<div id="ms-grid">' + htmlData + '</div>';
 }
 let displayGridJquery = () => {
   $('#ms-box').html('<div id="ms-grid"></div>');
@@ -68,10 +67,31 @@ let displayGridJquery = () => {
 
   $('#ms-grid').html(htmlData);
 }
-
 let startGame = () => {
-  initModel(ROWS,COLUMNS,MINES);
+  initModel(ROWS, COLUMNS, MINES);
   displayGrid();
 }
 
-startGame();
+let getNumber = (x, y) => {
+  let totalMines = 0;
+  let startX = x - 1
+  let endX = x + 1
+  let startY = y - 1
+  let endY = x + 1
+
+  for (let i = startX; i <= endX; i++) {
+    for (let j = startY; j <= endY; j++) {
+      if ((i >= 0 && i < ROWS) && (j >= 0 && j < COLUMNS)) {
+        let Cell = GRID[i][j]
+
+        if (i != x || j != y) {
+          if (Cell) {
+            totalMines++;
+          }
+        }
+      }
+    }
+  }
+  return totalMines;
+}
+    startGame();

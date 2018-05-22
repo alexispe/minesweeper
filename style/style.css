@@ -3,9 +3,18 @@ td{
   width: 30px;
   height: 30px;
   text-align: center;
+  background-color: rgba(56, 52, 52, 0.74);
 }
-
+ 
+td:not(.revealed):hover {
+  cursor: pointer;
+}
 table{
   border-collapse: collapse;
   margin: auto;
+} 
+
+.revealed{
+  background-color: rgba(56, 52, 52, 0.322);
+  cursor: default;
 }
