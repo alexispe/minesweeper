@@ -69,9 +69,34 @@ let displayGridJquery = () => {
   $('#ms-grid').html(htmlData);
 }
 
+let getPosition = (cell) => {
+  let x = y = 0;
+  let index = $("td").index(cell);
+
+  let col = index % COLUMNS;
+  let row = Math.floor(index / COLUMNS);
+
+  return [col,row]
+}
+let reveal = (cell) => {
+  if(!$(cell).hasClass('revealed')) {
+    $(cell).addClass('revealed')
+    let pos = getPosition(cell)
+    // let number = getNumber(pos[x],pos[y])
+    // if(number > 0) $(cell).text(number)
+    // //else 
+  }
+}
+
 let startGame = () => {
   initModel(ROWS,COLUMNS,MINES);
   displayGrid();
 }
 
 startGame();
+
+$('td').click(function() {
+  console.log($(this));
+  getPosition($(this))
+  reveal($(this))
+})
