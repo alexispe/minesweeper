@@ -28,3 +28,7 @@ table{
   background-image: url(../images/flag.png);
   background-size: cover;
 }
+
+h1{
+  text-align: center;
+}

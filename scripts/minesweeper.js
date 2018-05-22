@@ -109,34 +109,34 @@ let getPosition = (cell) => {
   return [row, col]
 }
 let reveal = (cell) => {
-  if (!$(cell).hasClass('revealed')) {
-    $(cell).addClass('revealed')
-    let pos = getPosition(cell)
-    if (!GRID[pos[0]][pos[1]]) {
-      let number = getNumber(pos[0], pos[1])
-      if (number > 0) $(cell).text(number)
-      else {
-        let startX = pos[0] - 1
-        let endX = pos[0] + 1
-        let startY = pos[1] - 1
-        let endY = pos[1] + 1
+  if (!$(cell).hasClass('flagged')) {
+    if (!$(cell).hasClass('revealed')) {
+      $(cell).addClass('revealed')
+      let pos = getPosition(cell)
+      if (!GRID[pos[0]][pos[1]]) {
+        let number = getNumber(pos[0], pos[1])
+        if (number > 0) $(cell).text(number)
+        else {
+          let startX = pos[0] - 1
+          let endX = pos[0] + 1
+          let startY = pos[1] - 1
+          let endY = pos[1] + 1
 
-        for (let x = startX; x <= endX; x++) {
-          for (let y = startY; y <= endY; y++) {
-            if ((x >= 0 && x < ROWS) && (y >= 0 && y < COLUMNS)) {
-              let index = x * COLUMNS + y
-              reveal($('td').eq(index))
+          for (let x = startX; x <= endX; x++) {
+            for (let y = startY; y <= endY; y++) {
+              if ((x >= 0 && x < ROWS) && (y >= 0 && y < COLUMNS)) {
+                let index = x * COLUMNS + y
+                reveal($('td').eq(index))
+              }
             }
           }
         }
-      }
-    } else endGame()
+      } else endGame()
+    }
   }
 }
 let flag = (cell) => {
-  if (!$(cell).hasClass('flagged')) {
-    $(cell).addClass('flagged')
-  }
+  $(cell).toggleClass('flagged')
 }
 
 let prepareDialogs = () => {
@@ -145,8 +145,8 @@ let prepareDialogs = () => {
       {
         text: "Ok",
         icon: "ui-icon-heart",
-        click: function() {
-          $( this ).dialog( "close" );
+        click: function () {
+          $(this).dialog("close");
         }
       }
     ]
@@ -159,7 +159,7 @@ let startGame = () => {
 let endGame = () => {
   $('td').off("click");
   $('td').off("contextmenu");
-  $('td').css('cursor','default');
+  $('td').css('cursor', 'default');
   for (let x = 0; x < GRID.length; x++) {
     for (let y = 0; y < GRID[x].length; y++) {
       let index = x * COLUMNS + y
