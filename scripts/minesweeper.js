@@ -139,6 +139,10 @@ let flag = (cell) => {
   $(cell).toggleClass('flagged')
 }
 
+let displayMetadata = () =>{
+  $('#ms-box').append('Mines restantes : <span id="counter"></span>')
+}
+
 let prepareDialogs = () => {
   FAIL_DIALOG = $("#dialog").dialog({
     autoOpen: false,
@@ -155,6 +159,7 @@ let prepareDialogs = () => {
 let startGame = () => {
   initModel(ROWS, COLUMNS, MINES);
   displayGridJquery();
+  displayMetadata();
 }
 let endGame = () => {
   let win = false;
