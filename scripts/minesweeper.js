@@ -4,12 +4,24 @@ const GRID = [];
 let initModel = (rows, columns, mines) => {
   let columnsTemp = [], minesTemp = [];
 
-  for (var m = 0; m < mines; m++) {
-    let randomRow = Math.floor(Math.random() * Math.floor(ROWS));
-    let randomCol = Math.floor(Math.random() * Math.floor(COLUMNS));
-    minesTemp.push([randomRow,randomCol]);
+  // Création du tableau minesTemp contenant les coordonnées des mines
+  for (let m = 0; m < mines; m++) {
+    let mineAdded = false;
+    // Tant que une mine existe déjà aux coordonnées demandées, on recommence
+    while(!mineAdded) {
+      let randomRow = Math.floor(Math.random() * Math.floor(ROWS));
+      let randomCol = Math.floor(Math.random() * Math.floor(COLUMNS));
+
+      var alreadyExist = $.grep(minesTemp, function(element, index){
+        return element[0] == randomRow && element[1] == randomCol
+      });
+      if(!alreadyExist.length) {
+        mineAdded = true
+        minesTemp.push([randomRow,randomCol]);
+      }
+    }
   }
-  console.log('array mines : ', minesTemp);
+  // console.log('array mines : ', minesTemp);
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
@@ -52,35 +64,3 @@ let startGame = () => {
 }
 
 startGame();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// let createMap = (height,width) => {
-//   const map = [];
-//   let html = '';
-//   console.log(height,width);
-//   for (let h = 0; h < height; h++) {
-//     for (let w = 0; w < width; w++) {
-//       $('.map').append('<div></div>');
-//     }
-//   }
-//   console.log(html);
-// }
-//
-// createMap(10,20)
-// // console.log('kqgsvhjbn');
-// //
-// // console.log($('.map'));
-// // $('.map').addClass('yo')
