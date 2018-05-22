@@ -1,6 +1,6 @@
-const ROWS = 9, COLUMNS = 9, MINES = 10;
+const ROWS = 2, COLUMNS = 2, MINES = 1;
 const GRID = [];
-let FAIL_DIALOG = null;
+let FAIL_DIALOG = WIN_DIALOG = null;
 
 let initModel = (rows, columns, mines) => {
   let columnsTemp = [], minesTemp = [];
@@ -131,7 +131,8 @@ let reveal = (cell) => {
             }
           }
         }
-      } else endGame()
+        if(isVictory()) endGame(true)
+      } else endGame(false)
     }
   }
 }
@@ -143,8 +144,24 @@ let displayMetadata = () =>{
   $('#ms-box').append('Mines restantes : <span id="counter"></span>')
 }
 
+let isVictory = () => {
+  const total = ROWS * COLUMNS;
+  const revealed = $('.revealed').length
+  return total - revealed === MINES ? true : false;
+}
 let prepareDialogs = () => {
-  FAIL_DIALOG = $("#dialog").dialog({
+  FAIL_DIALOG = $("#dialogLose").dialog({
+    autoOpen: false,
+    buttons: [
+      {
+        text: "Voir la grille",
+        click: function() {
+          $(this).dialog( "close" );
+        }
+      }
+    ]
+  });
+  WIN_DIALOG = $("#dialogWin").dialog({
     autoOpen: false,
     buttons: [
       {
@@ -161,8 +178,7 @@ let startGame = () => {
   displayGridJquery();
   displayMetadata();
 }
-let endGame = () => {
-  let win = false;
+let endGame = (win) => {
   $('td').off("click");
   $('td').off("contextmenu");
   $('td').css('cursor', 'default');
@@ -176,7 +192,8 @@ let endGame = () => {
     }
   }
 
-  if(!win) $( "#dialog" ).dialog( "open" );
+  if(win) $("#dialogWin").dialog("open");
+  else $('#dialogLose').dialog("open");
 }
 
 prepareDialogs();
