@@ -141,12 +141,12 @@ let flag = (cell) => {
 
 let prepareDialogs = () => {
   FAIL_DIALOG = $("#dialog").dialog({
+    autoOpen: false,
     buttons: [
       {
-        text: "Ok",
-        icon: "ui-icon-heart",
-        click: function () {
-          $(this).dialog("close");
+        text: "Voir la grille",
+        click: function() {
+          $(this).dialog( "close" );
         }
       }
     ]
@@ -157,6 +157,7 @@ let startGame = () => {
   displayGridJquery();
 }
 let endGame = () => {
+  let win = false;
   $('td').off("click");
   $('td').off("contextmenu");
   $('td').css('cursor', 'default');
@@ -169,7 +170,9 @@ let endGame = () => {
       }
     }
   }
+
+  if(!win) $( "#dialog" ).dialog( "open" );
 }
 
-
+prepareDialogs();
 startGame();
