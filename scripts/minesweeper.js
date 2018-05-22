@@ -59,7 +59,7 @@ let displayGridJquery = () => {
   for (let r = 0; r < GRID.length; r++) {
     htmlData += '<tr>';
     for (let c = 0; c < GRID[r].length; c++) {
-      htmlData += '<td onclick="reveal(this)">';
+      htmlData += '<td>';
       //htmlData += GRID[r][c] ? 'X' : '-';
       htmlData += '</td>';
     }
@@ -67,6 +67,12 @@ let displayGridJquery = () => {
   }
 
   $('#ms-grid').html(htmlData);
+  $('td').bind('click', function(){
+    reveal(this);
+  });
+  $('td').bind('rightclick', function(){
+    flag(this);
+  });
 }
 
 let getNumber = (posX, posY) => {
@@ -131,7 +137,7 @@ let startGame = () => {
   displayGridJquery();
 }
 let endGame = () => {
-  $("td").off();
+  $('td').off("click");
   for (let x = 0; x < GRID.length; x++) {
     for (let y = 0; y < GRID[x].length; y++) {
       let index = x * COLUMNS + y
