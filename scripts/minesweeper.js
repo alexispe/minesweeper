@@ -1,4 +1,4 @@
-const ROWS = 2, COLUMNS = 2, MINES = 1;
+const ROWS = 9, COLUMNS = 9, MINES = 10;
 const GRID = [];
 let FAIL_DIALOG = WIN_DIALOG = null;
 
@@ -131,7 +131,7 @@ let reveal = (cell) => {
             }
           }
         }
-        if(isVictory()) endGame(true)
+        if (isVictory()) endGame(true)
       } else endGame(false)
     }
   }
@@ -140,7 +140,7 @@ let flag = (cell) => {
   $(cell).toggleClass('flagged')
 }
 
-let displayMetadata = () =>{
+let displayMetadata = () => {
   $('#ms-box').append('Mines restantes : <span id="counter"></span>')
 }
 
@@ -155,8 +155,8 @@ let prepareDialogs = () => {
     buttons: [
       {
         text: "Voir la grille",
-        click: function() {
-          $(this).dialog( "close" );
+        click: function () {
+          $(this).dialog("close");
         }
       }
     ]
@@ -166,8 +166,8 @@ let prepareDialogs = () => {
     buttons: [
       {
         text: "Voir la grille",
-        click: function() {
-          $(this).dialog( "close" );
+        click: function () {
+          $(this).dialog("close");
         }
       }
     ]
@@ -191,9 +191,15 @@ let endGame = (win) => {
       }
     }
   }
-
-  if(win) $("#dialogWin").dialog("open");
+  if (win) $("#dialogWin").dialog("open");
   else $('#dialogLose').dialog("open");
+}
+
+let saveScore = () => {
+  let playerName = prompt("Entrez votre nom")
+  $.post("http://louiecinephile.fr/cesi/js/save.php",
+    { name: playerName, time: "56" }
+  );
 }
 
 prepareDialogs();
