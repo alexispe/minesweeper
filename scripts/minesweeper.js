@@ -117,7 +117,42 @@ let callbackTimer = () => {
 // -----------------------------------------------------
 // --------------- FONCTIONS APPEL SCORE ---------------
 // -----------------------------------------------------
+let saveScore = (callback = undefined) => {
+  let playerName = prompt("Entrez votre nom")
+  if(playerName) {
+    $.post('http://www.louiecinephile.fr/cesi/js/save.php',
+      { name: playerName, time: timer },
+      (response) => {
+        if(response == 1) {
+          if(typeof callback != undefined) callback(10)
+          console.log("L'appel est réussi");
+        }
+        else {
+          console.log("L'appel a échoué");
+        }
+      }
+    );
+  }
+}
+let getScores = (max) => {
+  $.getJSON("http://www.louiecinephile.fr/cesi/js/scores.php?max="+max+"&t="+$.now(), function(data) {
+    $("#loader").hide()
+    var items = [];
+    $.each(data,function(key, val) {
+      let min = Math.floor(val.time / 60);
+      let sec = ('0' + (val.time % 60)).slice(-2);
+      items.push("<li>"+val.name+" - "+min+":"+sec+" minutes</li>");
+    });
+    $("#scoreboard").html(items.join(""))
+  });
+}
+
+
+// --------------------------------------------------
+// ---------------- FONCTIONS DU JEU ----------------
+// --------------------------------------------------
 let getNumber = (posX, posY) => {
+  // Renvoi le nombre de mines autour du point aux coordonnées passées en paramètre
   let totalMines = 0;
   let startX = posX - 1
   let endX = posX + 1
@@ -139,6 +174,7 @@ let getNumber = (posX, posY) => {
   return totalMines;
 }
 let getPosition = (cell) => {
+  // Renvoi la position [x,y] de la cellule (html) envoyé en paramètre
   let x = y = 0;
   let index = $("td").index(cell);
 
@@ -148,9 +184,6 @@ let getPosition = (cell) => {
   return [row, col]
 }
 
-// --------------------------------------------------
-// ---------------- FONCTIONS DU JEU ----------------
-// --------------------------------------------------
 let reveal = (cell) => {
   if (!$(cell).hasClass('flagged')) {
     if (!$(cell).hasClass('revealed')) {
@@ -186,40 +219,14 @@ let flag = (cell) => {
   $(cell).toggleClass('flagged')
 }
 
-let saveScore = () => {
-  let playerName = prompt("Entrez votre nom")
-  if(playerName) {
-    $.post('http://www.louiecinephile.fr/cesi/js/save.php',
-      { name: playerName, time: timer },
-      (response) => {
-        if(response == 1) {
-          console.log("L'appel est réussi");
-        }
-        else {
-          console.log("L'appel a échoué");
-        }
-      }
-    );
-  }
-}
-let getScores = (max) => {
-  $.getJSON("http://www.louiecinephile.fr/cesi/js/scores.php?max="+max+"&t="+$.now(), function(data) {
-    $("#loader").hide()
-    var items = [];
-    $.each(data,function(key, val) {
-      let min = Math.floor(val.time / 60);
-      let sec = ('0' + (val.time % 60)).slice(-2);
-      items.push("<li>"+val.name+" - "+min+":"+sec+" minutes</li>");
-    });
-    $("#scoreboard").html(items.join(""))
-  });
-}
 let isVictory = () => {
+  // Renvoi true ou false si victoire ou non
   const total = ROWS * COLUMNS;
   const revealed = $('.revealed').length
   return total - revealed == MINES ? true : false;
 }
 let prepareDialogs = () => {
+  // Préparation des différents dialogs de JQueryUI
   FAIL_DIALOG = $("#dialogLose").dialog({
     autoOpen: false,
     buttons: [
@@ -276,7 +283,6 @@ let configStart = () => {
   return true;
 }
 let startGame = () => {
-
   initModel(ROWS, COLUMNS, MINES);
   displayGridJquery();
   displayMetadata();
@@ -288,6 +294,7 @@ let endGame = (win) => {
   $('td').off("click");
   $('td').off("contextmenu");
   $('td').css('cursor', 'default');
+
   for (let x = 0; x < GRID.length; x++) {
     for (let y = 0; y < GRID[x].length; y++) {
       let index = x * COLUMNS + y
@@ -297,11 +304,11 @@ let endGame = (win) => {
       }
     }
   }
+  
   if (win) {
     $("#dialogWin").dialog("open");
     if(!scoreSaved) {
-      saveScore();
-      getScores(10);
+      saveScore(getScores);
       scoreSaved = true
     }
   }
