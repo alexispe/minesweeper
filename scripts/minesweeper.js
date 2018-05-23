@@ -1,5 +1,4 @@
-let ROWS = 0, COLUMNS = 0, MINES = 0;
-const GRID = [];
+let ROWS = 0, COLUMNS = 0, MINES = 0, GRID = [];
 let FAIL_DIALOG = WIN_DIALOG = START_DIALOG = null;
 let timer = 0, gameEnded = false, intervalTimer;
 let scoreboardLoaded = false, scoreSaved = false;
@@ -17,6 +16,8 @@ const COUNTER = {
 }
 
 let initModel = (rows, columns, mines) => {
+  GRID = [];
+  scoreSaved = scoreboardLoaded = false;
   let columnsTemp = [], minesTemp = [];
 
   // Création du tableau minesTemp contenant les coordonnées des mines
@@ -50,6 +51,9 @@ let initModel = (rows, columns, mines) => {
   }
 }
 
+// -----------------------------------------------------
+// --------------- FONCTIONS D'AFFICHAGE ---------------
+// -----------------------------------------------------
 let displayGrid = () => {
   let htmlData = '';
   htmlData += '<table>';
@@ -91,11 +95,15 @@ let displayGridJquery = () => {
   });
 }
 let displayMetadata = () => {
-  $('#ms-box').append('<p>Mines restantes : <span id="counter">'+(MINES-COUNTER.value)+'</span> | Temps écoulé : <span id="timer">'+(timer)+'</span></p>')
-  $('#ms-box').append('<div><h2>Scores</h2><div id="loader"><img src="images/loader.gif"/></div><ul id="scoreboard"></ul></div>')
+  $('#ms-box').append('<div class="metadata"><p>Mines restantes : <span id="counter">'+(MINES-COUNTER.value)+'</span> / '+MINES+'<br/> Temps écoulé : <span id="timer">'+(timer)+'</span></p></div>')
+  $('#ms-box').append('<div class="scoreboard"><h2>DERNIERS SCORES</h2><div id="loader"><img src="images/loader.gif"/></div><ul id="scoreboard"></ul></div>')
   COUNTER.setCallback(callbackMetadata);
   intervalTimer = setInterval(callbackTimer, 1000);
 }
+
+// --------------------------------------------------
+// --------------- FONCTIONS CALLBACK ---------------
+// --------------------------------------------------
 let callbackMetadata = () => {
   $('#counter').html(MINES-COUNTER.value)
 }
@@ -106,6 +114,9 @@ let callbackTimer = () => {
   $('#timer').text(min+':'+sec)
 }
 
+// -----------------------------------------------------
+// --------------- FONCTIONS APPEL SCORE ---------------
+// -----------------------------------------------------
 let getNumber = (posX, posY) => {
   let totalMines = 0;
   let startX = posX - 1
@@ -136,6 +147,10 @@ let getPosition = (cell) => {
 
   return [row, col]
 }
+
+// --------------------------------------------------
+// ---------------- FONCTIONS DU JEU ----------------
+// --------------------------------------------------
 let reveal = (cell) => {
   if (!$(cell).hasClass('flagged')) {
     if (!$(cell).hasClass('revealed')) {
@@ -173,25 +188,28 @@ let flag = (cell) => {
 
 let saveScore = () => {
   let playerName = prompt("Entrez votre nom")
-  $.post('http://www.louiecinephile.fr/cesi/js/save.php',
-    { name: playerName, time: timer },
-    (response) => {
-      if(response == 1) {
-        console.log("L'appel est réussi");
+  if(playerName) {
+    $.post('http://www.louiecinephile.fr/cesi/js/save.php',
+      { name: playerName, time: timer },
+      (response) => {
+        if(response == 1) {
+          console.log("L'appel est réussi");
+        }
+        else {
+          console.log("L'appel a échoué");
+        }
       }
-      else {
-        console.log("L'appel a échoué");
-      }
-    }
-  );
+    );
+  }
 }
 let getScores = (max) => {
   $.getJSON("http://www.louiecinephile.fr/cesi/js/scores.php?max="+max+"&t="+$.now(), function(data) {
-    console.log('loader',$('#loader'))
     $("#loader").hide()
     var items = [];
     $.each(data,function(key, val) {
-      items.push("<li>"+val.name+" : "+val.time+" points</li>");
+      let min = Math.floor(val.time / 60);
+      let sec = ('0' + (val.time % 60)).slice(-2);
+      items.push("<li>"+val.name+" - "+min+":"+sec+" minutes</li>");
     });
     $("#scoreboard").html(items.join(""))
   });
@@ -210,6 +228,12 @@ let prepareDialogs = () => {
         click: function () {
           $(this).dialog("close");
         }
+      },{
+        text:"Relancer",
+        click: function() {
+          $(this).dialog("close");
+          $('#dialogStart').dialog("open");
+        }
       }
     ]
   });
@@ -221,20 +245,27 @@ let prepareDialogs = () => {
         click: function () {
           $(this).dialog("close");
         }
+      },{
+        text:"Relancer",
+        click: function() {
+          $(this).dialog("close");
+          $('#dialogStart').dialog("open");
+        }
       }
     ]
   });
   START_DIALOG = $( "#dialogStart" ).dialog({
-      height: 400,
-      width: 400,
-      modal: true,
-      buttons: {
-        "Démarrer": configStart
-      },
-      close: function() {
+    autoOpen: false,
+    height: 400,
+    width: 400,
+    modal: true,
+    buttons: {
+      "Démarrer": configStart
+    },
+    close: function() {
 
-      }
-    });
+    }
+  });
 }
 let configStart = () => {
   ROWS = $('#lignes').val()
@@ -270,6 +301,7 @@ let endGame = (win) => {
     $("#dialogWin").dialog("open");
     if(!scoreSaved) {
       saveScore();
+      getScores(10);
       scoreSaved = true
     }
   }
@@ -278,3 +310,4 @@ let endGame = (win) => {
 
 
 prepareDialogs();
+$('#dialogStart').dialog("open");

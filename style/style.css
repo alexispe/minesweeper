@@ -1,34 +1,91 @@
+@font-face {
+    font-family: PacFont;
+    src: url(../fonts/PAC-FONT.TTF);
+}
+
 body {
+  background: linear-gradient(#f0eff9,#EEE);
+  color: #222;
+  font-family: Helvetica;
+
+}
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+h1,h2 {
+  border: 10px double #2a24aa;
+  border-radius: 10px;
+  overflow: hidden;
   text-align: center;
+  padding: 10px;
+  font-family: PacFont;
+}
+h1 img {
+  float: right;
+  height: 40px;
+  margin-right: 15px;
+}
+#timer {
+  font-weight: bold;
+}
+div#ms-box {
+  display: grid;
+  grid-template-areas:
+            "map meta"
+            "map score";
+  grid-template-rows: 50px auto;
+  grid-template-columns: 1fr 250px;
+  grid-gap: 10px;
+}
+div#ms-box .ms-grid {
+  text-align: center;
+  grid-area: map;
+}
+div#ms-box .metadata {
+  grid-area: meta;
+  height: auto;
+}
+div#ms-box .scoreboard {
+  grid-area: score;
 }
 
-td{
-  border: 1px solid black;
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  background-color: rgba(56, 52, 52, 0.74);
-}
-
-td:not(.revealed):hover {
-  cursor: pointer;
-}
 table{
   border-collapse: collapse;
   margin: auto;
 }
+td{
+  border: 1px solid #555;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  font-weight: bold;
+  background-color: #222;
+}
+td:not(.revealed):hover {
+  cursor: pointer;
+}
 
 .revealed{
-  background-color: rgba(56, 52, 52, 0.322);
+  background-size: cover;
   cursor: default;
+  color: #fdb796;
+  background: #444;
 }
-
+.revealed::before {
+  width: 5px;
+  height: 5px;
+  margin: auto;
+  border-radius: 5px;
+  background-color: #fdb796;
+}
 .mined{
-  background-image: url(../images/bomb.png);
+  background-color: #222;
+  background-image: url(../images/ghost.png);
   background-size: cover;
 }
-
 .flagged{
-  background-image: url(../images/flag.png);
+  background-color: #222;
+  background-image: url(../images/scared-ghost.png);
   background-size: cover;
 }
