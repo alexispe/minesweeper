@@ -11,11 +11,25 @@
     <div id="ms-box">
 
     </div>
-    <div id="dialogLose" title="Basic dialog">
+    <div id="dialogLose" title="Désolé">
       <p>T'as perdu.</p>
     </div>
-    <div id="dialogWin" title="Basic dialog">
+    <div id="dialogWin" title="Bravo">
       <p>T'as gagné.</p>
+    </div>
+    <div id="dialogStart" title="Démarrage">
+      <p class="validateTips">Configuration de la grille</p>
+      <form>
+        <fieldset>
+          <label for="lignes">Lignes</label>
+          <input type="text" name="lignes" id="lignes" value="20" class="text ui-widget-content ui-corner-all"><br/>
+          <label for="colonnes">Colonnes</label>
+          <input type="text" name="colonnes" id="colonnes" value="20" class="text ui-widget-content ui-corner-all"><br/>
+          <label for="bombs">Bombes</label>
+          <input type="text" name="bombs" id="bombs" value="10" class="text ui-widget-content ui-corner-all"><br/>
+          <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
+      </form>
     </div>
   </body>
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
