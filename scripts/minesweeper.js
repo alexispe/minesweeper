@@ -1,6 +1,20 @@
 const ROWS = 9, COLUMNS = 9, MINES = 10;
 const GRID = [];
 let FAIL_DIALOG = WIN_DIALOG = null;
+let timer = 0, gameEnded = false, intervalTimer;
+let scoreboardLoaded = false;
+
+const COUNTER = {
+  value: 0,
+  func: undefined,
+  setValue: (val) => {
+    COUNTER.value = val
+    if(typeof COUNTER.func != undefined) COUNTER.func()
+  },
+  setCallback: (func) => {
+    COUNTER.func = func;
+  }
+}
 
 let initModel = (rows, columns, mines) => {
   let columnsTemp = [], minesTemp = [];
@@ -76,6 +90,36 @@ let displayGridJquery = () => {
     flag(this);
   });
 }
+let displayMetadata = () => {
+  $('#ms-box').append('<p>Mines restantes : <span id="counter">'+(MINES-COUNTER.value)+'</span> | Temps écoulé : <span id="timer">'+(timer)+'</span></p>')
+  $('#ms-box').append('<div><h2>Scores</h2><div id="loader"><img src="images/loader.gif"/></div><ul id="scoreboard"></ul></div>')
+  COUNTER.setCallback(callbackMetadata);
+  intervalTimer = setInterval(callbackTimer, 1000);
+}
+let callbackMetadata = () => {
+  $('#counter').html(MINES-COUNTER.value)
+}
+let callbackTimer = () => {
+  timer ++;
+  let min = Math.floor(timer / 60);
+  let sec = ('0' + (timer % 60)).slice(-2);
+  $('#timer').text(min+':'+sec)
+}
+let displayMetadata = () => {
+  $('#ms-box').append('<p>Mines restantes : <span id="counter">'+(MINES-COUNTER.value)+'</span> | Temps écoulé : <span id="timer">'+(timer)+'</span></p>')
+  $('#ms-box').append('<div><h2>Scores</h2><div id="loader"><img src="images/loader.gif"/></div><ul id="scoreboard"></ul></div>')
+  COUNTER.setCallback(callbackMetadata);
+  intervalTimer = setInterval(callbackTimer, 1000);
+}
+let callbackMetadata = () => {
+  $('#counter').html(MINES-COUNTER.value)
+}
+let callbackTimer = () => {
+  timer ++;
+  let min = Math.floor(timer / 60);
+  let sec = ('0' + (timer % 60)).slice(-2);
+  $('#timer').text(min+':'+sec)
+}
 
 let getNumber = (posX, posY) => {
   let totalMines = 0;
@@ -88,7 +132,6 @@ let getNumber = (posX, posY) => {
     for (let y = startY; y <= endY; y++) {
       if ((x >= 0 && x < ROWS) && (y >= 0 && y < COLUMNS)) {
         let Cell = GRID[x][y]
-        console.log('Row : ' + x + ' Col : ' + y + ' Val:' + Cell);
         if (x != posX || y != posY) {
           if (Cell) {
             totalMines++;
@@ -112,6 +155,7 @@ let reveal = (cell) => {
   if (!$(cell).hasClass('flagged')) {
     if (!$(cell).hasClass('revealed')) {
       $(cell).addClass('revealed')
+      $(cell).off('contextmenu')
       let pos = getPosition(cell)
       if (!GRID[pos[0]][pos[1]]) {
         let number = getNumber(pos[0], pos[1])
@@ -137,13 +181,20 @@ let reveal = (cell) => {
   }
 }
 let flag = (cell) => {
+  let val = $(cell).hasClass('flagged') ? COUNTER.value - 1 : COUNTER.value + 1
+  COUNTER.setValue(val)
   $(cell).toggleClass('flagged')
 }
 
-let displayMetadata = () => {
-  $('#ms-box').append('Mines restantes : <span id="counter"></span>')
+let getScores = (max) => {
+  $.getJSON("http://www.louiecinephile.fr/cesi/js/scores.php?max="+max, function(data) {
+    var items = [];
+    $.each(data,function(key, val) {
+      items.push("<li>"+val.name+" "+val.time+"</li>");
+    });
+    $("#scoreboard").html(items.join(""))
+  });
 }
-
 let isVictory = () => {
   const total = ROWS * COLUMNS;
   const revealed = $('.revealed').length
@@ -177,8 +228,11 @@ let startGame = () => {
   initModel(ROWS, COLUMNS, MINES);
   displayGridJquery();
   displayMetadata();
+  getScores(10);
 }
 let endGame = (win) => {
+  gameEnded = true;
+  clearInterval(intervalTimer);
   $('td').off("click");
   $('td').off("contextmenu");
   $('td').css('cursor', 'default');

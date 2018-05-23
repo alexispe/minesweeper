@@ -1,3 +1,7 @@
+body {
+  text-align: center;
+}
+
 td{
   border: 1px solid black;
   width: 30px;
@@ -27,8 +31,4 @@ table{
 .flagged{
   background-image: url(../images/flag.png);
   background-size: cover;
-}
-
-h1{
-  text-align: center;
 }
